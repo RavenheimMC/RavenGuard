@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "ravenguard",
+  "version": "${version}",
+  "name": "RavenGuard",
+  "description": "",
+  "authors": [
+    "mk7a"
+  ],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/ravenguard/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "com.mk7a.ravenguard.client.RavenGuardClient"
+    ],
+    "main": [
+      "com.mk7a.ravenguard.RavenGuard"
+    ]
+  },
+  "mixins": [
+    "ravenguard.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
