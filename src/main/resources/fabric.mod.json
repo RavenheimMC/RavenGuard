@@ -3,7 +3,7 @@
   "id": "ravenguard",
   "version": "${version}",
   "name": "RavenGuard",
-  "description": "",
+  "description": "Familiarity breeds contempt.",
   "authors": [
     "mk7a"
   ],
@@ -15,8 +15,11 @@
     "client": [
       "com.mk7a.ravenguard.client.RavenGuardClient"
     ],
+    "server": [
+      "com.mk7a.ravenguard.server.RavenGuardServer"
+    ],
     "main": [
-      "com.mk7a.ravenguard.RavenGuard"
+      "com.mk7a.ravenguard.RavenGuardMod"
     ]
   },
   "mixins": [
@@ -24,7 +27,7 @@
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "fabric": "*",
+    "fabric-api": "*",
     "minecraft": "${minecraft_version}"
   }
 }
