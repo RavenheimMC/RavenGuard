@@ -9,7 +9,7 @@ import net.minecraft.network.PacketByteBuf;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static com.mk7a.ravenguard.RavenGuardMod.MOD_LIST_CHANNEL;
+import static com.mk7a.ravenguard.RavenGuardMod.*;
 
 public class RavenGuardClient implements ClientModInitializer {
 
@@ -24,12 +24,19 @@ public class RavenGuardClient implements ClientModInitializer {
         ClientLoginNetworking.registerGlobalReceiver(MOD_LIST_CHANNEL, (client, handler, buf, synchronizer) -> {
             PacketByteBuf responsePacket = PacketByteBufs.create();
 
-//            responsePacket.writeInt(mods.size());
-//            mods.forEach(responsePacket::writeString);
             responsePacket.writeString(mods.toString());
+            return CompletableFuture.completedFuture(responsePacket);
+        });
 
+
+        ClientLoginNetworking.registerGlobalReceiver(MODPACK_VERSION_CHANNEL, (client, handler, buf, synchronizer) -> {
+            PacketByteBuf responsePacket = PacketByteBufs.create();
+
+            responsePacket.writeString(MODPACK_VERSION);
             return CompletableFuture.completedFuture(responsePacket);
         });
 
     }
+
+
 }

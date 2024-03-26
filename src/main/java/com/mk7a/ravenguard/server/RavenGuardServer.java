@@ -18,9 +18,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.mk7a.ravenguard.RavenGuardMod.MOD_LIST_CHANNEL;
-
-
+import static com.mk7a.ravenguard.RavenGuardMod.*;
 
 
 public class RavenGuardServer implements DedicatedServerModInitializer {
@@ -31,6 +29,7 @@ public class RavenGuardServer implements DedicatedServerModInitializer {
     Set<String> expectedMods = new HashSet<>();
     boolean kickForUnexpectedMods = false;
     Set<String> unexpectedModWhitelist = new HashSet<>();
+    Set<String> blacklistedMods = new HashSet<>();
 
     private void readConfig() {
 
@@ -55,8 +54,7 @@ public class RavenGuardServer implements DedicatedServerModInitializer {
         config.getList("expectedMods").forEach(mod -> this.expectedMods.add((String) mod));
         this.kickForUnexpectedMods = config.getBoolean("kickForUnexpectedMods");
         config.getList("unexpectedModWhitelist").forEach(mod -> this.unexpectedModWhitelist.add((String) mod));
-
-
+        config.getList("blacklistedMods").forEach(mod -> this.blacklistedMods.add((String) mod));
 
     }
 
@@ -89,6 +87,15 @@ public class RavenGuardServer implements DedicatedServerModInitializer {
 
                 LOGGER.info("[RavenGuard] Player " + handler.getConnectionInfo() + "mods :" + modsFormatted);
 
+                var blacklistedMods = clientMods.stream()
+                        .filter(mod -> this.blacklistedMods.contains(mod))
+                        .toList();
+                if (!blacklistedMods.isEmpty()) {
+                    LOGGER.warn("[RavenGuard] Blacklisted mods: " + blacklistedMods);
+                    handler.disconnect(Text.of("§8[§6RavenGuard§8] §fUnexpected mods found in your client. " +
+                            "\n§7 Ensure you have the latest unmodified modpack version."));
+                }
+
                 // Filter out expected mods
                 var unexpectedMods = clientMods.stream()
                         .filter(mod -> !expectedMods.contains(mod))
@@ -112,6 +119,28 @@ public class RavenGuardServer implements DedicatedServerModInitializer {
                 }
 
 
+            }));
+
+        });
+
+        ServerLoginNetworking.registerGlobalReceiver(MODPACK_VERSION_CHANNEL, (server, handler, understood, buf, synchronizer, responseSender) -> {
+
+            // Disconnect if the client didn't understand the packet
+            if (!understood) {
+                handler.disconnect(Text.of("§8[§6RavenGuard§8] §c§cYour modpack is out of date. " +
+                        "\n§7 Please update to the latest version."));
+                return;
+            }
+
+            synchronizer.waitFor(server.submit(() -> {
+
+                String version = buf.readString(32767);
+
+
+                if (!version.equals(MODPACK_VERSION)) {
+                    handler.disconnect(Text.of("§8[§6RavenGuard§8] §c§cYour modpack is out of date. " +
+                            "\n§7 Please update to the latest version."));
+                }
 
             }));
 
