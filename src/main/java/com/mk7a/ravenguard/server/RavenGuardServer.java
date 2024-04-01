@@ -150,7 +150,9 @@ public class RavenGuardServer implements DedicatedServerModInitializer {
         ServerLoginConnectionEvents.QUERY_START.register((handler, server, sender, synchronizer) -> {
             // Send packet to request mod list
             sender.sendPacket(MOD_LIST_CHANNEL, PacketByteBufs.empty());
+            sender.sendPacket(MODPACK_VERSION_CHANNEL, PacketByteBufs.empty());
         });
+
 
 
     }
